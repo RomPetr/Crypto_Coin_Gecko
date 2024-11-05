@@ -11,6 +11,21 @@ import requests
 import pprint
 
 
+# Функция для получения списка криптовалют с сортировкой по рыночной капитализации
+def get_crypto_market_data():
+    try:
+        response = requests.get("https://api.coingecko.com/api/v3/coins/markets", params={
+            "vs_currency": "usd",
+            "order": "market_cap_desc",
+            "per_page": 1000,  # Получаем сразу 1000 криптовалют
+            "page": 1
+        })
+        response.raise_for_status()
+        return response.json()
+    except Exception as e:
+        mb.showerror("Ошибка", f"Код ошибки: {e}")
+
+
 # Функция для получения списка криптовалют
 def get_crypto_list():
     try:
@@ -61,10 +76,11 @@ window = Tk()
 window.title("Курс криптовалют")
 window.geometry("300x200")
 
-# Получаем список словарей криптовалют
-coins = get_crypto_list() # ... , {'id': 'zerpaay', 'name': 'Zerpaay', 'symbol': 'zrpy'}, {'id': 'zesh', 'name': 'Zesh', 'symbol': 'zesh'}, ...
+# Получаем список криптовалют
+coins = get_crypto_market_data()
 # print(len(coins)) # Сколько всего криптовалют публикуется на CionGecko.com (15135 на 05.11.2024)
 cr_combo_idx = [] # Создаем пустой список индексов
+cr_combo_market_caps = []
 
 # p1 = pprint.PrettyPrinter(indent=4)
 # p1.pprint(coins) # выведет в консоль список всех криптовалют в виде списка словарей
