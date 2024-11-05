@@ -37,6 +37,19 @@ def update_crypto_price(event=None):
         price = get_crypto_price(crypto_id)
         price_label.config(text=f"Курс: ${price:.2f}")
 
+# Обновляем список криптовалют по выбранной группе
+def update_crypto_list(event):
+    group = int(gr_combo.get()) - 1 # вычисление индекса выбранной группы из 50 криптовалют
+    start = group * 50 # начальный индекс для группы криптовалют
+    end = start + 50 # конечный индекс для группы криптовалют
+    crypto_names = [crypto["name"] for crypto in coins[start:end]] # генератор списка создаёт новый список, состоящий только из названий криптовалют из выбранной группы
+    crypto_ids = [crypto["id"] for crypto in coins[start:end]]
+    cr_combo["values"] = crypto_names
+    cr_combo.current(0)
+    cr_combo_idx.clear()
+    cr_combo_idx.extend(crypto_ids)
+    update_crypto_price()
+
 
 # Создаем интерфейс
 window = Tk()
