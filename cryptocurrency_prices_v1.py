@@ -23,6 +23,7 @@ def get_crypto_price(crypto_id):
         response = requests.get(f"https://api.coingecko.com/api/v3/simple/price?ids={crypto_id}&vs_currencies=usd")
         response.raise_for_status()
         price = response.json()
+        mb.showinfo("Цена", f"{price}")
         return price[crypto_id]["usd"]
     except Exception as e:
         mb.showerror("Ошибка", f"Код ошибки: {e}")
@@ -35,6 +36,7 @@ def update_crypto_price(event=None):
         crypto_id = cr_combo_idx[selected_index]
         price = get_crypto_price(crypto_id)
         price_label.config(text=f"Курс: ${price:.2f}")
+
 
 # Создаем интерфейс
 window = Tk()
