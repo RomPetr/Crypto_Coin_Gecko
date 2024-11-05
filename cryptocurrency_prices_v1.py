@@ -1,3 +1,4 @@
+import tkinter
 from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox as mb
@@ -16,13 +17,20 @@ def get_crypto_list():
 
 
 # Создаем интерфейс
-window = tk.Tk()
+window = Tk()
 window.title("Курс криптовалют")
 window.geometry("300x200")
 
 # Получаем список криптовалют
 coins = get_crypto_list()
 print(len(coins)) # Сколько всего криптовалют публикуется на CionGecko.com
+
+# Выпадающий список для выбора группы
+gr_label = Label(text=f"Выберите группу\n(в каждой группе по 50 криптовалют")
+gr_label.pack(pady=5)
+gr_combo = ttk.Combobox(values=[str(i) for i in range(1,21)])
+gr_combo.current(0) # устанавливает начальное значение для выпадающего списка ('1')
+gr_combo.pack()
 
 # Запуск интерфейса
 window.mainloop()
