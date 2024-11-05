@@ -32,5 +32,15 @@ gr_combo = ttk.Combobox(values=[str(i) for i in range(1,21)])
 gr_combo.current(0) # устанавливает начальное значение для выпадающего списка ('1')
 gr_combo.pack()
 
+# Выпадающий список для выбора криптовалюты
+cr_label = Label(text="Выберите криптовалюту:")
+cr_label.pack()
+cr_combo = ttk.Combobox(state="readonly")
+cr_combo.pack()
+
+# Метка для отображения курса
+price_label = Label(text="Курс: ")
+price_label.pack()
+
 # Запуск интерфейса
 window.mainloop()
