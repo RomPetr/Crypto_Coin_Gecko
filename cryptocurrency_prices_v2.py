@@ -104,8 +104,9 @@ cr_combo.bind("<<ComboboxSelected>>", update_crypto_price)
 price_label = Label(text="Курс: ")
 price_label.pack(pady=5)
 
-# c_price = get_crypto_price('bitcoin')
-# mb.showinfo("Крипта", c_price)
+# Метка для отображения рыночной капитализации
+market_cap_label = Label(text="Рыночная капитализация: ")
+market_cap_label.pack(pady=5)
 
 # Загрузка первой группы криптовалют
 update_crypto_list(None)
