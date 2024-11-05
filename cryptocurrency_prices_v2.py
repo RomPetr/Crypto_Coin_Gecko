@@ -50,7 +50,7 @@ def get_crypto_price(crypto_id):
 
 
 # Обновляем курс выбранной криптовалюты
-def update_crypto_price(event=None):
+def update_crypto_price_and_market_cap(event=None):
     selected_index = cr_combo.current()
     if selected_index != -1:
         crypto_id = cr_combo_idx[selected_index]
@@ -62,13 +62,25 @@ def update_crypto_list(event):
     group = int(gr_combo.get()) - 1 # вычисление индекса выбранной группы из 50 криптовалют
     start = group * 50 # начальный индекс для группы криптовалют
     end = start + 50 # конечный индекс для группы криптовалют
+    # создаем список очередных 50-ти имен (names:) выбранной группы криптовалют
     crypto_names = [crypto["name"] for crypto in coins[start:end]] # генератор списка создаёт новый список, состоящий только из названий криптовалют из выбранной группы
+    # создаем список очередных 50-ти идентификаторов (id:) выбранной группы криптовалют
     crypto_ids = [crypto["id"] for crypto in coins[start:end]]
-    cr_combo["values"] = crypto_names
-    cr_combo.current(0)
-    cr_combo_idx.clear()
-    cr_combo_idx.extend(crypto_ids)
-    update_crypto_price()
+    # создаем список очередных 50-ти рыночных капитализаций выбранной группы криптовалют
+    crypto_market_caps = [crypto["market_cap"] for crypto in coins[start:end]]
+
+    # Обновляем выпадающий список с криптовалютами и сохраняем идентификаторы
+    cr_combo["values"] = crypto_names # заполняет Combobox с криптовалютами очередными 50-ю наименованиями
+    cr_combo.current(0) # устанавливает текущий выбранный элемент Combobox на первый элемент списка crypto_names, то есть с индексом 0
+
+    cr_combo_idx.clear() # очищаем список идентификаторов от старых значений
+    cr_combo_idx.extend(crypto_ids) # вставляем новые идентификаторы
+
+    cr_combo_market_caps.clear() # очищаем список капитализаций от старых значений
+    cr_combo_market_caps.extend(crypto_market_caps) # вставляем новые капитализации выбранной группы
+
+    # Обновляем цену и рыночную капитализацию для первой криптовалюты в группе
+    update_crypto_price_and_market_cap()
 
 
 # Создаем интерфейс
@@ -80,7 +92,7 @@ window.geometry("300x200")
 coins = get_crypto_market_data()
 # print(len(coins)) # Сколько всего криптовалют публикуется на CionGecko.com (15135 на 05.11.2024)
 cr_combo_idx = [] # Создаем пустой список индексов
-cr_combo_market_caps = []
+cr_combo_market_caps = [] # Создаем пустой список рыночных капитализаций
 
 # p1 = pprint.PrettyPrinter(indent=4)
 # p1.pprint(coins) # выведет в консоль список всех криптовалют в виде списка словарей
@@ -88,7 +100,7 @@ cr_combo_market_caps = []
 # Выпадающий список для выбора группы
 gr_label = Label(text=f"Выберите группу\n(в каждой группе по 50 криптовалют")
 gr_label.pack(pady=5)
-gr_combo = ttk.Combobox(values=[str(i) for i in range(1,21)])
+gr_combo = ttk.Combobox(values=[str(i) for i in range(1,21)], state="readonly")
 gr_combo.current(0) # устанавливает начальное значение для выпадающего списка ('1')
 gr_combo.pack(pady=5)
 gr_combo.bind("<<ComboboxSelected>>", update_crypto_list)
