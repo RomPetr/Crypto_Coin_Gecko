@@ -23,7 +23,7 @@ def get_crypto_price(crypto_id):
         response = requests.get(f"https://api.coingecko.com/api/v3/simple/price?ids={crypto_id}&vs_currencies=usd")
         response.raise_for_status()
         price = response.json()
-        mb.showinfo("Цена", f"{price}")
+        # mb.showinfo("Цена", f"{price}")
         return price[crypto_id]["usd"]
     except Exception as e:
         mb.showerror("Ошибка", f"Код ошибки: {e}")
@@ -35,7 +35,7 @@ def update_crypto_price(event=None):
     if selected_index != -1:
         crypto_id = cr_combo_idx[selected_index]
         price = get_crypto_price(crypto_id)
-        price_label.config(text=f"Курс: ${price:.2f}")
+        price_label.config(text=f"Курс: ${price:.4f}")
 
 # Обновляем список криптовалют по выбранной группе
 def update_crypto_list(event):
@@ -56,13 +56,13 @@ window = Tk()
 window.title("Курс криптовалют")
 window.geometry("300x200")
 
-# Получаем список криптовалют
-coins = get_crypto_list()
-print(len(coins)) # Сколько всего криптовалют публикуется на CionGecko.com (15135 на 05.11.2024)
+# Получаем список словарей криптовалют
+coins = get_crypto_list() # ... , {'id': 'zerpaay', 'name': 'Zerpaay', 'symbol': 'zrpy'}, {'id': 'zesh', 'name': 'Zesh', 'symbol': 'zesh'}, ...
+# print(len(coins)) # Сколько всего криптовалют публикуется на CionGecko.com (15135 на 05.11.2024)
 cr_combo_idx = [] # Создаем пустой список индексов
 
 # p1 = pprint.PrettyPrinter(indent=4)
-# p1.pprint(coins)
+# p1.pprint(coins) # выведет в консоль список всех криптовалют в виде списка словарей
 
 # Выпадающий список для выбора группы
 gr_label = Label(text=f"Выберите группу\n(в каждой группе по 50 криптовалют")
@@ -83,8 +83,11 @@ cr_combo.bind("<<ComboboxSelected>>", update_crypto_price)
 price_label = Label(text="Курс: ")
 price_label.pack(pady=5)
 
-c_price = get_crypto_price('bitcoin')
-mb.showinfo("Крипта", c_price)
+# c_price = get_crypto_price('bitcoin')
+# mb.showinfo("Крипта", c_price)
+
+# Загрузка первой группы криптовалют
+update_crypto_list(None)
 
 # Запуск интерфейса
 window.mainloop()
