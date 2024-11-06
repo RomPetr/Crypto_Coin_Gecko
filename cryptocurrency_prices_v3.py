@@ -106,7 +106,7 @@ def update_crypto_list(event):
 # Создаем интерфейс
 window = Tk()
 window.title("Курс криптовалют")
-window.geometry("350x420")
+window.geometry("350x430")
 
 # Получаем список криптовалют
 coins = get_crypto_market_data()
@@ -150,7 +150,7 @@ update_crypto_list(None)
 window.mainloop()
 
 """
-Пояснения к обновленному коду:
+Краткое пояснение функций:
 1. get_crypto_market_data: эта функция запрашивает сразу 100 криптовалют, отсортированных по рыночной капитализации, 
    что упрощает деление на группы.
 2. update_crypto_image: функция загружает изображение по URL и преобразует его для отображения в Tkinter с 
