@@ -1,8 +1,16 @@
+"""
+Чтобы добавить отображение изображения выбранной криптовалюты, необходимо модифицировать код так,
+чтобы программа получала ссылку на изображение для каждой криптовалюты. При изменении выбора
+криптовалюты программа будет загружать и отображать соответствующее изображение с помощью библиотеки PIL.
+"""
+
 import tkinter
 from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox as mb
 import requests
+from PIL import Image, ImageTk
+from io import BytesIO
 
 
 # Функция для получения списка криптовалют с сортировкой по рыночной капитализации
@@ -11,7 +19,7 @@ def get_crypto_market_data():
         response = requests.get("https://api.coingecko.com/api/v3/coins/markets", params={
             "vs_currency": "usd",
             "order": "market_cap_desc",
-            "per_page": 1000,  # Получаем сразу 1000 криптовалют
+            "per_page": 100,  # Получаем сразу 100 криптовалют
             "page": 1
         })
         response.raise_for_status()
@@ -42,17 +50,26 @@ def get_crypto_price(crypto_id):
         mb.showerror("Ошибка", f"Код ошибки: {e}")
 
 
+# Функция для загрузки и отображения изображения криптовалюты
+def update_crypto_image(image_url):
+
+
+
+
 # Обновляем курс выбранной криптовалюты
 def update_crypto_price_and_market_cap(event=None):
     selected_index = cr_combo.current()
     if selected_index != -1:
-        crypto_id = cr_combo_idx[selected_index] # забираем id крипты из ранее созданного списка идентификаторов
+        crypto_id = cr_combo_ids[selected_index] # забираем id крипты из ранее созданного списка идентификаторов
         market_cap = cr_combo_market_caps[selected_index]  # забираем market_cap из ранее созданого списка рыночных капитализаций
+        image_url = cr_combo_images[selected_index] # забираем URl картинки крипотовалюты
         price = get_crypto_price(crypto_id)  # получаем стоимость криптовалюты к доллару
 
-        # заполняем инф-цией соответствующие метки главного окна
+
+        # заполняем информацией соответствующие метки главного окна
         price_label.config(text=f"Курс: ${price:.4f}")
         market_cap_label.config(text=f"Рыночная капитализация: ${market_cap:,.0f}")
+        update_crypto_image(image_url) # обновляем картинку выбранной криптовалюты
 
 # Обновляем список криптовалют по выбранной группе
 def update_crypto_list(event):
@@ -65,31 +82,37 @@ def update_crypto_list(event):
     crypto_ids = [crypto["id"] for crypto in coins[start:end]]
     # создаем список очередных 10-ти рыночных капитализаций выбранной группы криптовалют
     crypto_market_caps = [crypto["market_cap"] for crypto in coins[start:end]]
+    # при загрузке данных о криптовалютах теперь мы также сохраняем URL-адреса изображений каждой из них
+    crypto_images = [crypto["image"] for crypto in coins[start:end]]
 
     # Обновляем выпадающий список с криптовалютами и сохраняем идентификаторы
     cr_combo["values"] = crypto_names  # заполняет Combobox с криптовалютами очередными 50-ю наименованиями
     cr_combo.current(0)  # устанавливает текущий выбранный элемент Combobox на первый элемент списка crypto_names, то есть с индексом 0
 
-    cr_combo_idx.clear()  # очищаем список идентификаторов от старых значений
-    cr_combo_idx.extend(crypto_ids)  # вставляем новые идентификаторы
+    cr_combo_ids.clear()  # очищаем список идентификаторов от старых значений
+    cr_combo_ids.extend(crypto_ids)  # вставляем новые идентификаторы
 
     cr_combo_market_caps.clear()  # очищаем список капитализаций от старых значений
     cr_combo_market_caps.extend(crypto_market_caps) # вставляем новые капитализации выбранной группы
 
-    # Обновляем цену и рыночную капитализацию для первой криптовалюты в группе
+    cr_combo_images.clear() # очищаем список URL изображений
+    cr_combo_images.extend(crypto_images) # вставляем новые URL изображений очередных 10-ти криптовалют
+
+    # Обновляем цену, рыночную капитализацию и изображение для первой криптовалюты в группе
     update_crypto_price_and_market_cap()
 
 
 # Создаем интерфейс
 window = Tk()
 window.title("Курс криптовалют")
-window.geometry("320x220")
+window.geometry("350x370")
 
 # Получаем список криптовалют
 coins = get_crypto_market_data()
 # print(len(coins)) # Сколько всего криптовалют публикуется на CionGecko.com (15135 на 05.11.2024)
-cr_combo_idx = [] # Создаем пустой список индексов
+cr_combo_ids = [] # Создаем пустой список id криптовалют
 cr_combo_market_caps = [] # Создаем пустой список рыночных капитализаций
+cr_combo_images = [] # Создаем пустой список URL изображений криптовалют
 
 # Выпадающий список для выбора группы
 gr_label = Label(text=f"Выберите группу\n(в каждой группе по 10 криптовалют")
@@ -113,6 +136,11 @@ price_label.pack(pady=5)
 # Метка для отображения рыночной капитализации
 market_cap_label = Label(text="Рыночная капитализация: ")
 market_cap_label.pack(pady=5)
+
+# Метка для отображения изображения криптовалюты
+image_label = Label()
+image_label.pack(pady=10)
+
 
 # Загрузка первой группы криптовалют
 update_crypto_list(None)
