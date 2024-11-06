@@ -28,15 +28,13 @@ def get_crypto_market_data():
         mb.showerror("Ошибка", f"Код ошибки: {e}")
 
 
-# Функция для получения списка криптовалют
-# def get_crypto_list():
-#     try:
-#         response = requests.get("https://api.coingecko.com/api/v3/coins/list")
-#         response.raise_for_status()
-#         get_coins = response.json()
-#         return get_coins
-#     except Exception as e:
-#         mb.showerror("Ошибка", f"Код ошибки: {e}")
+# Функция для загрузки и отображения изображения криптовалюты
+def update_crypto_image(image_url):
+    try:
+        response = requests.get(image_url)
+
+    except Exception as e:
+        mb.showerror("Ошибка", f"Код ошибки: {e}")
 
 
 # Функция для получения курса криптовалюты
@@ -50,12 +48,6 @@ def get_crypto_price(crypto_id):
         mb.showerror("Ошибка", f"Код ошибки: {e}")
 
 
-# Функция для загрузки и отображения изображения криптовалюты
-def update_crypto_image(image_url):
-
-
-
-
 # Обновляем курс выбранной криптовалюты
 def update_crypto_price_and_market_cap(event=None):
     selected_index = cr_combo.current()
@@ -64,7 +56,6 @@ def update_crypto_price_and_market_cap(event=None):
         market_cap = cr_combo_market_caps[selected_index]  # забираем market_cap из ранее созданого списка рыночных капитализаций
         image_url = cr_combo_images[selected_index] # забираем URl картинки крипотовалюты
         price = get_crypto_price(crypto_id)  # получаем стоимость криптовалюты к доллару
-
 
         # заполняем информацией соответствующие метки главного окна
         price_label.config(text=f"Курс: ${price:.4f}")
